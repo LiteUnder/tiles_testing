@@ -1,0 +1,13 @@
+[package]
+name = "tiles_testing"
+version = "0.1.0"
+authors = []
+edition = "2018"
+
+[dependencies.amethyst]
+version = "0.13.0"
+features = ["vulkan", "tiles"]
+
+[features]
+vulkan = ["amethyst/vulkan"]
+tiles = ["amethyst/tiles"]
