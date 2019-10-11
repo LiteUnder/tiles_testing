@@ -14,6 +14,19 @@ use amethyst::{
     tiles::{Tile, TileMap},
     window::ScreenDimensions,
 };
+use amethyst_imgui;
+
+#[derive(Default, Clone, Copy)]
+pub struct ImguiWindow;
+impl<'s> amethyst::ecs::System<'s> for ImguiWindow {
+	type SystemData = ();
+
+	fn run(&mut self, _: Self::SystemData) {
+		amethyst_imgui::with(|ui| {
+			ui.show_demo_window(&mut true);
+		});
+	}
+}
 
 #[derive(Default, Clone)]
 pub struct TestTile;
@@ -68,7 +81,6 @@ impl SimpleState for MainState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
         let dimensions = (*world.read_resource::<ScreenDimensions>()).clone(); // may cause issues with resizing...
-
         let spr_sheet = load_sprite(world);
 
         init_sprite(

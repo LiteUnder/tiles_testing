@@ -1,5 +1,6 @@
 use amethyst::{
     core::transform::TransformBundle,
+    input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
@@ -9,11 +10,13 @@ use amethyst::{
     tiles::{RenderTiles2D, Tile},
     utils::application_root_dir,
 };
+use amethyst_imgui::RenderImgui;
 
 mod state;
 use state::MainState;
 use state::MapMovementSystem;
 use state::TestTile;
+use state::ImguiWindow;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -24,7 +27,9 @@ fn main() -> amethyst::Result<()> {
 
     let game_data = GameDataBuilder::default()
         .with_bundle(TransformBundle::new())?
+        .with_bundle(InputBundle::<StringBindings>::default())?
         .with(MapMovementSystem::default(), "MapMovementSystem", &[])
+        .with(ImguiWindow::default(), "ImguiWindow", &["input_system"])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
@@ -32,7 +37,8 @@ fn main() -> amethyst::Result<()> {
                         .with_clear([0.0, 0.0, 0.0, 1.0]),
                 )
                 .with_plugin(RenderFlat2D::default())
-                .with_plugin(RenderTiles2D::<TestTile>::default()),
+                .with_plugin(RenderTiles2D::<TestTile>::default())
+                .with_plugin(RenderImgui::<StringBindings>::default()),
         )?;
         
 
