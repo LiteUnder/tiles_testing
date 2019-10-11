@@ -13,6 +13,7 @@ use amethyst::{
 mod state;
 use state::MainState;
 use state::TestTile;
+use state::MapMovementSystem;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -31,7 +32,12 @@ fn main() -> amethyst::Result<()> {
                 .with_plugin(RenderFlat2D::default())
                 .with_plugin(RenderTiles2D::<TestTile>::default()),
         )?
-        .with_bundle(TransformBundle::new())?;
+        .with_bundle(TransformBundle::new())?
+        .with(
+            MapMovementSystem::default(),
+            "MapMovementSystem",
+            &[]
+        );
 
     let mut game = Application::new(res_dir, MainState, game_data)?;
     game.run();
