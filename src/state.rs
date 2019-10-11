@@ -4,7 +4,7 @@ use amethyst::{
     core::{
         transform::Transform,
         math::{
-            Point3, Vector3
+            Point3, Vector3,
         }
     },
     window::ScreenDimensions,
@@ -16,7 +16,7 @@ use amethyst::{
 pub struct TestTile;
 impl Tile for TestTile {
     fn sprite(&self, _: Point3<u32>, _: &World) -> Option<usize> {
-        Some(64)
+        Some(0)
     }
 }
 
@@ -37,16 +37,21 @@ impl SimpleState for MainState {
         let map = TileMap::<TestTile>::new(
             Vector3::new(10, 10, 1),
             Vector3::new(64, 64, 1),
-            Some(sprite)
+            Some(sprite.clone())
         );
 
-        let _map_entity = world
-            .create_entity()
-            .with(map)
-            .with(Transform::default())
-            .build();
+        // let mut map_transform = Transform::default();
+        // map_transform.set_translation_xyz((map.dimensions().x * map.tile_dimensions().x) as f32 * 0.5, (map.dimensions().y * map.tile_dimensions().y) as f32 * 0.5, 0.0);
 
-        init_sprite(world, &sprite_render);
+        // world
+        //     .create_entity()
+        //     .with(map_transform)
+        //     .with(map)
+        //     .build();
+        
+        init_map(world, map, &dimensions);
+
+        //init_sprite(world, &sprite_render);
 
         init_camera(world, &dimensions);
     }
@@ -97,5 +102,16 @@ fn init_sprite(world: &mut World, sprite: &SpriteRender) {
         .create_entity()
         .with(sprite.clone())
         .with(transform)
+        .build();
+}
+
+fn init_map(world: &mut World, map: TileMap<TestTile>, dim: &ScreenDimensions) {
+    let mut trans = Transform::default();
+    trans.set_translation_xyz(dim.width() * 0.5, dim.height() * 0.5, 0.0);
+
+    world
+        .create_entity()
+        .with(trans)
+        .with(map)
         .build();
 }
