@@ -1,17 +1,18 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
-    prelude::*,
     core::{
-        transform::Transform,
-        math::{
-            Point3, Vector3,
-        },
-        timing::Time,
+        math::{Point3, Vector3},
+        Time,
+        Transform,
     },
-    window::ScreenDimensions,
-    renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture, sprite::SpriteSheetHandle, Transparent},
-    tiles::{Tile, TileMap, Map, CoordinateEncoder},
     ecs::prelude::*,
+    prelude::*,
+    renderer::{
+        sprite::{SpriteRender, SpriteSheet, SpriteSheetFormat, SpriteSheetHandle},
+        Camera, ImageFormat, Texture, Transparent,
+    },
+    tiles::{Tile, TileMap},
+    window::ScreenDimensions,
 };
 
 #[derive(Default, Clone)]
@@ -43,7 +44,7 @@ impl<'s> System<'s> for MapMovementSystem {
         ReadStorage<'s, TileMap<TestTile>>,
     );
 
-    fn run(&mut self, (time, mut transforms, tilemaps,): Self::SystemData) {
+    fn run(&mut self, (time, mut transforms, tilemaps): Self::SystemData) {
         if self.rotate {
             for (_, transform) in (&tilemaps, &mut transforms).join() {
                 transform.rotate_2d(time.delta_seconds());
@@ -68,28 +69,33 @@ impl SimpleState for MainState {
         let world = data.world;
         let dimensions = (*world.read_resource::<ScreenDimensions>()).clone(); // may cause issues with resizing...
 
-        let sprite = load_sprite(world);
+        let spr_sheet = load_sprite(world);
+
+        init_sprite(
+            world,
+            &SpriteRender {
+                sprite_sheet: spr_sheet.clone(),
+                sprite_number: 0,
+            },
+        );
 
         let map = TileMap::<TestTile>::new(
             Vector3::new(10, 10, 1),
             Vector3::new(64, 64, 1),
-            Some(sprite.clone())
+            Some(spr_sheet),
         );
-        
+
         init_map(world, map, &dimensions);
 
-        init_sprite(world, &SpriteRender {
-            sprite_sheet: sprite.clone(),
-            sprite_number: 0,
-        });
-
+        
         init_camera(world, &dimensions);
     }
 }
 
 fn init_camera(world: &mut World, dimensions: &ScreenDimensions) {
     let mut transform = Transform::default();
-    transform.set_translation_xyz(dimensions.width() * 0.5, dimensions.height() * 0.5, 1.0);
+    //transform.set_translation_xyz(dimensions.width() * 0.5, dimensions.height() * 0.5, 1.0);
+    transform.set_translation_z(1.0);
 
     world
         .create_entity()
@@ -103,25 +109,16 @@ fn load_sprite(world: &mut World) -> SpriteSheetHandle {
 
     let tex_handle = {
         let tex_storage = world.read_resource::<AssetStorage<Texture>>();
-        loader.load(
-            "sprites/eye.png",
-            ImageFormat::default(),
-            (),
-            &tex_storage,
-        )
+        loader.load("sprites/eye.png", ImageFormat::default(), (), &tex_storage)
     };
 
-    let sheet_handle = {
-        let sheet_storage = world.read_resource::<AssetStorage<SpriteSheet>>();
-        loader.load(
-            "sprites/eye.ron",
-            SpriteSheetFormat(tex_handle),
-            (),
-            &sheet_storage,
-        )
-    };
-
-    sheet_handle
+    let sheet_storage = world.read_resource::<AssetStorage<SpriteSheet>>();
+    loader.load(
+        "sprites/eye.ron",
+        SpriteSheetFormat(tex_handle),
+        (),
+        &sheet_storage,
+    )
 }
 
 fn init_sprite(world: &mut World, sprite: &SpriteRender) {
@@ -136,16 +133,14 @@ fn init_sprite(world: &mut World, sprite: &SpriteRender) {
 }
 
 fn init_map(world: &mut World, map: TileMap<TestTile>, dim: &ScreenDimensions) {
-    let mut trans = Transform::default();
-    // trans.set_translation_xyz(dim.width() * 0.5, dim.height() * 0.5, 0.0); // doesn't work because of a bug or smth
-    trans.prepend_translation_x(dim.width());
+    let mut transform = Transform::default();
 
-    println!("Map Translation {:#?}", trans.translation());
+    println!("Map Translation {:#?}", transform.translation());
 
     let _map_entity = world
         .create_entity()
         .with(map)
-        .with(trans)
+        .with(transform)
         .with(Transparent)
         .build();
 }

@@ -5,9 +5,5 @@ authors = []
 edition = "2018"
 
 [dependencies.amethyst]
-version = "0.13.2"
+git = "https://github.com/amethyst/amethyst"
 features = ["vulkan", "tiles"]
-
-[features]
-vulkan = ["amethyst/vulkan"]
-tiles = ["amethyst/tiles"]

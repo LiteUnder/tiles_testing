@@ -6,14 +6,14 @@ use amethyst::{
         types::DefaultBackend,
         RenderingBundle,
     },
+    tiles::{RenderTiles2D, Tile},
     utils::application_root_dir,
-    tiles::RenderTiles2D,
 };
 
 mod state;
 use state::MainState;
-use state::TestTile;
 use state::MapMovementSystem;
+use state::TestTile;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -23,6 +23,8 @@ fn main() -> amethyst::Result<()> {
     let display_config_path = res_dir.join("display_config.ron");
 
     let game_data = GameDataBuilder::default()
+        .with_bundle(TransformBundle::new())?
+        .with(MapMovementSystem::default(), "MapMovementSystem", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
@@ -31,13 +33,8 @@ fn main() -> amethyst::Result<()> {
                 )
                 .with_plugin(RenderFlat2D::default())
                 .with_plugin(RenderTiles2D::<TestTile>::default()),
-        )?
-        .with_bundle(TransformBundle::new())?
-        .with(
-            MapMovementSystem::default(),
-            "MapMovementSystem",
-            &[]
-        );
+        )?;
+        
 
     let mut game = Application::new(res_dir, MainState, game_data)?;
     game.run();
