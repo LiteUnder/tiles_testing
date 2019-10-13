@@ -7,15 +7,15 @@ use amethyst::{
         types::DefaultBackend,
         RenderingBundle,
     },
-    tiles::{RenderTiles2D},
+    tiles::RenderTiles2D,
     utils::application_root_dir,
 };
 use amethyst_imgui::RenderImgui;
 
 mod state;
+use state::ImguiWindow;
 use state::MainState;
 use state::TestTile;
-use state::ImguiWindow;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -38,7 +38,6 @@ fn main() -> amethyst::Result<()> {
                 .with_plugin(RenderTiles2D::<TestTile>::default())
                 .with_plugin(RenderImgui::<StringBindings>::default()),
         )?;
-        
 
     let mut game = Application::new(res_dir, MainState, game_data)?;
     game.run();

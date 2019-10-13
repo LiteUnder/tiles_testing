@@ -10,7 +10,7 @@ use amethyst::{
         sprite::{SpriteRender, SpriteSheet, SpriteSheetFormat, SpriteSheetHandle},
         Camera, ImageFormat, Texture, Transparent,
     },
-    tiles::{Tile, TileMap, Map},
+    tiles::{Map, Tile, TileMap},
     window::ScreenDimensions,
 };
 use amethyst_imgui;
@@ -18,13 +18,13 @@ use amethyst_imgui;
 #[derive(Default, Clone, Copy)]
 pub struct ImguiWindow;
 impl<'s> System<'s> for ImguiWindow {
-	type SystemData = ();
+    type SystemData = ();
 
-	fn run(&mut self, _: Self::SystemData) {
-		amethyst_imgui::with(|ui| {
-			ui.show_demo_window(&mut true);
-		});
-	}
+    fn run(&mut self, _: Self::SystemData) {
+        amethyst_imgui::with(|ui| {
+            ui.show_demo_window(&mut true);
+        });
+    }
 }
 
 #[derive(Default, Clone)]
@@ -34,6 +34,7 @@ impl Tile for TestTile {
         Some(0)
     }
 }
+
 pub struct MainState;
 
 impl SimpleState for MainState {
@@ -104,8 +105,14 @@ fn init_map(world: &mut World, map: TileMap<TestTile>) {
     let mut transform = Transform::default();
     // println!("Map Translation {:#?}", transform.translation());
     // transform.set_scale(Vector3::new(2.0, 2.0, 1.0));
-    transform.set_translation_x((map.dimensions().x * map.tile_dimensions().x) as f32 * 0.5 + (map.tile_dimensions().x as f32 * 0.5));
-    transform.set_translation_y((map.dimensions().y * map.tile_dimensions().y) as f32 * 0.5 - (map.tile_dimensions().y as f32 * 0.5));
+    transform.set_translation_x(
+        (map.dimensions().x * map.tile_dimensions().x) as f32 * 0.5
+            + (map.tile_dimensions().x as f32 * 0.5),
+    );
+    transform.set_translation_y(
+        (map.dimensions().y * map.tile_dimensions().y) as f32 * 0.5
+            - (map.tile_dimensions().y as f32 * 0.5),
+    );
 
     let _map_entity = world
         .create_entity()
