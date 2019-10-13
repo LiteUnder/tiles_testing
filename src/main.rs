@@ -13,9 +13,9 @@ use amethyst::{
 use amethyst_imgui::RenderImgui;
 
 mod state;
-use state::ImguiWindow;
+use state::systems::ImguiWindow;
+use state::tiles::TestTile;
 use state::MainState;
-use state::TestTile;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
