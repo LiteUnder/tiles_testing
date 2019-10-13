@@ -14,10 +14,7 @@ use amethyst::{
     window::ScreenDimensions,
 };
 
-pub mod systems;
-pub mod tiles;
-
-use tiles::TestTile;
+use crate::game::tiles::TestTile;
 pub struct MainState;
 
 impl SimpleState for MainState {

@@ -12,10 +12,10 @@ use amethyst::{
 };
 use amethyst_imgui::RenderImgui;
 
-mod state;
-use state::systems::ImguiWindow;
-use state::tiles::TestTile;
-use state::MainState;
+mod game;
+use game::systems::ImguiWindow;
+use game::tiles::TestTile;
+use game::states::MainState;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
