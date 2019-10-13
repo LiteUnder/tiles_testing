@@ -2,7 +2,6 @@ use amethyst::{
     assets::{AssetStorage, Loader},
     core::{
         math::{Point3, Vector3},
-        Time,
         Transform,
     },
     ecs::prelude::*,
@@ -11,14 +10,14 @@ use amethyst::{
         sprite::{SpriteRender, SpriteSheet, SpriteSheetFormat, SpriteSheetHandle},
         Camera, ImageFormat, Texture, Transparent,
     },
-    tiles::{Tile, TileMap},
+    tiles::{Tile, TileMap, Map},
     window::ScreenDimensions,
 };
 use amethyst_imgui;
 
 #[derive(Default, Clone, Copy)]
 pub struct ImguiWindow;
-impl<'s> amethyst::ecs::System<'s> for ImguiWindow {
+impl<'s> System<'s> for ImguiWindow {
 	type SystemData = ();
 
 	fn run(&mut self, _: Self::SystemData) {
@@ -33,46 +32,6 @@ pub struct TestTile;
 impl Tile for TestTile {
     fn sprite(&self, _: Point3<u32>, _: &World) -> Option<usize> {
         Some(0)
-    }
-}
-
-pub struct MapMovementSystem {
-    rotate: bool,
-    translate: bool,
-    vector: Vector3<f32>,
-}
-impl Default for MapMovementSystem {
-    fn default() -> Self {
-        Self {
-            rotate: true,
-            translate: true,
-            vector: Vector3::new(100.0, 0.0, 0.0),
-        }
-    }
-}
-impl<'s> System<'s> for MapMovementSystem {
-    type SystemData = (
-        Read<'s, Time>,
-        WriteStorage<'s, Transform>,
-        ReadStorage<'s, TileMap<TestTile>>,
-    );
-
-    fn run(&mut self, (time, mut transforms, tilemaps): Self::SystemData) {
-        if self.rotate {
-            for (_, transform) in (&tilemaps, &mut transforms).join() {
-                transform.rotate_2d(time.delta_seconds());
-            }
-        }
-        if self.translate {
-            for (_, transform) in (&tilemaps, &mut transforms).join() {
-                transform.prepend_translation(self.vector * time.delta_seconds());
-                if transform.translation().x > 500.0 {
-                    self.vector = Vector3::new(-100.0, 0.0, 0.0);
-                } else if transform.translation().x < -500.0 {
-                    self.vector = Vector3::new(100.0, 0.0, 0.0);
-                }
-            }
-        }
     }
 }
 pub struct MainState;
@@ -97,21 +56,18 @@ impl SimpleState for MainState {
             Some(spr_sheet),
         );
 
-        init_map(world, map, &dimensions);
-
-        
+        init_map(world, map);
         init_camera(world, &dimensions);
     }
 }
 
-fn init_camera(world: &mut World, dimensions: &ScreenDimensions) {
+fn init_camera(world: &mut World, dim: &ScreenDimensions) {
     let mut transform = Transform::default();
-    //transform.set_translation_xyz(dimensions.width() * 0.5, dimensions.height() * 0.5, 1.0);
-    transform.set_translation_z(1.0);
+    transform.set_translation_xyz(dim.width() * 0.5, dim.height() * 0.5, 1.0);
 
     world
         .create_entity()
-        .with(Camera::standard_2d(dimensions.width(), dimensions.height()))
+        .with(Camera::standard_2d(dim.width(), dim.height()))
         .with(transform)
         .build();
 }
@@ -144,10 +100,12 @@ fn init_sprite(world: &mut World, sprite: &SpriteRender) {
         .build();
 }
 
-fn init_map(world: &mut World, map: TileMap<TestTile>, dim: &ScreenDimensions) {
+fn init_map(world: &mut World, map: TileMap<TestTile>) {
     let mut transform = Transform::default();
-
-    println!("Map Translation {:#?}", transform.translation());
+    // println!("Map Translation {:#?}", transform.translation());
+    // transform.set_scale(Vector3::new(2.0, 2.0, 1.0));
+    transform.set_translation_x((map.dimensions().x * map.tile_dimensions().x) as f32 * 0.5 + (map.tile_dimensions().x as f32 * 0.5));
+    transform.set_translation_y((map.dimensions().y * map.tile_dimensions().y) as f32 * 0.5 - (map.tile_dimensions().y as f32 * 0.5));
 
     let _map_entity = world
         .create_entity()

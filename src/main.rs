@@ -7,14 +7,13 @@ use amethyst::{
         types::DefaultBackend,
         RenderingBundle,
     },
-    tiles::{RenderTiles2D, Tile},
+    tiles::{RenderTiles2D},
     utils::application_root_dir,
 };
 use amethyst_imgui::RenderImgui;
 
 mod state;
 use state::MainState;
-use state::MapMovementSystem;
 use state::TestTile;
 use state::ImguiWindow;
 
@@ -28,7 +27,6 @@ fn main() -> amethyst::Result<()> {
     let game_data = GameDataBuilder::default()
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::default())?
-        .with(MapMovementSystem::default(), "MapMovementSystem", &[])
         .with(ImguiWindow::default(), "ImguiWindow", &["input_system"])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
