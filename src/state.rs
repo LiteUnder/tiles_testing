@@ -1,16 +1,16 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
     core::{
-        math::{Point3, Vector3},
+        math::{Vector3},
         Transform,
     },
     ecs::prelude::*,
     prelude::*,
     renderer::{
         sprite::{SpriteRender, SpriteSheet, SpriteSheetFormat, SpriteSheetHandle},
-        Camera, ImageFormat, Texture, Transparent,
+        Camera, ImageFormat, Texture,
     },
-    tiles::{Map, Tile, TileMap},
+    tiles::{TileMap},
     window::ScreenDimensions,
 };
 
