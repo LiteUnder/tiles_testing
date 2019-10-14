@@ -4,8 +4,8 @@ use amethyst::{
 };
 
 pub struct Player {
-    velocity_x: f32,
-    velocity_y: f32,
+    pub velocity_x: f32,
+    pub velocity_y: f32,
 }
 
 impl Default for Player {

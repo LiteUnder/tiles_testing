@@ -24,6 +24,8 @@ impl SimpleState for MainState {
         let eye_sheet = load_sprite(world, "eye");
         let player_sheet = load_sprite(world, "player");
 
+        world.register::<Player>();
+
         init_player(
             world,
             &SpriteRender {

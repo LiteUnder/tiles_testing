@@ -14,8 +14,8 @@ use amethyst_imgui::RenderImgui;
 
 mod game;
 use game::states::MainState;
-use game::systems::ImguiWindow;
 use game::tiles::TestTile;
+use game::systems::*;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -23,11 +23,16 @@ fn main() -> amethyst::Result<()> {
     let app_root = application_root_dir()?;
     let res_dir = app_root.join("res");
     let display_config_path = res_dir.join("display_config.ron");
+    let bindings_path = res_dir.join("bindings.ron");
 
     let game_data = GameDataBuilder::default()
         .with_bundle(TransformBundle::new())?
-        .with_bundle(InputBundle::<StringBindings>::default())?
+        .with_bundle(
+            InputBundle::<StringBindings>::new()
+            .with_bindings_from_file(bindings_path)?
+        )?
         .with(ImguiWindow::default(), "ImguiWindow", &["input_system"])
+        .with(PlayerInput::default(), "PlayerInput", &["input_system"])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
