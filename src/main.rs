@@ -33,6 +33,7 @@ fn main() -> amethyst::Result<()> {
         )?
         .with(ImguiWindow::default(), "ImguiWindow", &["input_system"])
         .with(PlayerInput::default(), "PlayerInput", &["input_system"])
+        .with(PlayerMovement::default(), "PlayerMovement", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
