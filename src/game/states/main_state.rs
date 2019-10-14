@@ -18,20 +18,22 @@ impl SimpleState for MainState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
         let dimensions = (*world.read_resource::<ScreenDimensions>()).clone(); // may cause issues with resizing...
-        let spr_sheet = load_sprite(world);
+        let eye_sheet = load_sprite(world, "eye");
+        let player_sheet = load_sprite(world, "player");
 
-        init_sprite(
+        init_player(
             world,
             &SpriteRender {
-                sprite_sheet: spr_sheet.clone(),
+                sprite_sheet: player_sheet,
                 sprite_number: 0,
             },
+            &dimensions,
         );
 
         let map = TileMap::<TestTile>::new(
-            Vector3::new(10, 10, 1),
+            Vector3::new(20, 11, 1),
             Vector3::new(64, 64, 1),
-            Some(spr_sheet),
+            Some(eye_sheet),
         );
 
         TestTile::init_map(world, map);
@@ -50,26 +52,27 @@ fn init_camera(world: &mut World, dim: &ScreenDimensions) {
         .build();
 }
 
-fn load_sprite(world: &mut World) -> SpriteSheetHandle {
+fn load_sprite(world: &mut World, name: &str) -> SpriteSheetHandle {
     let loader = world.read_resource::<Loader>();
 
     let tex_handle = {
         let tex_storage = world.read_resource::<AssetStorage<Texture>>();
-        loader.load("sprites/eye.png", ImageFormat::default(), (), &tex_storage)
+        loader.load(format!("sprites/{}.png", name), ImageFormat::default(), (), &tex_storage)
     };
 
     let sheet_storage = world.read_resource::<AssetStorage<SpriteSheet>>();
     loader.load(
-        "sprites/eye.ron",
+        format!("sprites/{}.ron", name),
         SpriteSheetFormat(tex_handle),
         (),
         &sheet_storage,
     )
 }
 
-fn init_sprite(world: &mut World, sprite: &SpriteRender) {
+fn init_player(world: &mut World, sprite: &SpriteRender, dim: &ScreenDimensions) {
     let mut transform = Transform::default();
-    transform.set_translation_xyz(640., 360., 0.);
+    transform.set_translation_xyz(dim.width() * 0.5, dim.height() * 0.5, 0.1);
+    transform.set_scale(Vector3::new(1.5, 1.5, 1.0));
 
     world
         .create_entity()
