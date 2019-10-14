@@ -11,7 +11,10 @@ use amethyst::{
     window::ScreenDimensions,
 };
 
-use crate::game::tiles::TestTile;
+use crate::game::{
+    tiles::TestTile,
+    components::Player,
+};
 pub struct MainState;
 
 impl SimpleState for MainState {
@@ -78,5 +81,6 @@ fn init_player(world: &mut World, sprite: &SpriteRender, dim: &ScreenDimensions)
         .create_entity()
         .with(sprite.clone())
         .with(transform)
+        .with(Player::default())
         .build();
 }
